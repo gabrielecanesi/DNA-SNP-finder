@@ -4,6 +4,6 @@ SET (CMAKE_CXX_STANDARD 11)
 
 PROJECT(spacedSeeds)
 
-ADD_EXECUTABLE(spacedSeeds main.cpp)
+ADD_EXECUTABLE(spacedSeeds main.cpp SequenceInfo.cpp SequenceInfo.h util.h util.cpp algorithms.h algorithms.cpp)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include/)
 TARGET_LINK_LIBRARIES(spacedSeeds ${CMAKE_SOURCE_DIR}/lib/libnthash.a)
