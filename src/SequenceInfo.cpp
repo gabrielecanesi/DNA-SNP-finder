@@ -4,7 +4,7 @@
 
 #include "SequenceInfo.h"
 #include "util.h"
-#include <nthash/nthash.hpp>
+#include "nthash/nthash.hpp"
 
 SequenceInfo::SequenceInfo(const std::shared_ptr<std::string> &sequence, const std::vector<std::string> &seeds, bool buildHashTable) :
         M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()){
