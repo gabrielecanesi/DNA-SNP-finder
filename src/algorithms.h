@@ -9,7 +9,7 @@
 #include "SequenceInfo.h"
 
 namespace algorithms {
-    size_t findSNPPosition(const SequenceInfo &referenceInfo, const SequenceInfo & rInfo);
+    size_t findSNPPosition(const std::shared_ptr<std::string> &reference, const std::shared_ptr<std::string> &r, size_t k);
 }
 
 #endif //SPACEDSEEDS_ALGORITHMS_H

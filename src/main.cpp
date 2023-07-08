@@ -1,31 +1,48 @@
 #include <iostream>
 #include "SequenceInfo.h"
 #include "algorithms.h"
+#include "util.h"
+#include <chrono>
 
 int main(int argc, char **argv) {
-    size_t k = 5;
 
-    
-    std::shared_ptr<std::string> reference = std::make_shared<std::string>("RRAACTGTACGGGGGGGGCAAGTGCAAAAAAAAATAAAAAAAA");
+    if (argc != 4) {
+        throw std::runtime_error("Wrong argument number");
+    }
+
+    size_t k = std::stoi(argv[1]);
+    auto reference = util::readFromFASTA(argv[2], true);
+    auto r = util::readFromFASTA(argv[3], true);
+
+
+    *r = reference->substr(180000000, 60000);
+    if ( (*r)[3] != 'T'){
+        (*r)[3] = 'T';
+    } else {
+        (*r)[3] = 'A';
+    }
+
+    std::cout << reference->length() << std::endl;
+
+    /*std::shared_ptr<std::string> reference = std::make_shared<std::string>("RRAACTGTACGGGGGGGGCAAGTGCAAAAAAAAATAAAAAAAA");
     std::shared_ptr<std::string> r = std::make_shared<std::string>("GGGGGGGGCAAGTGTAAAAAAAAATA");
 
     *reference = "GGGAACGTAATTGCGGGTC";
     *r = "GAACGTAATTGCC";
 
     *reference = "TAACGTAATTGCCGAACGTAATTGCCATACGTAATTGCCAAACGTAATTGCT";
-    *r = "AAACGTAATTGCC";
+    *r = "AAACGTAATTGCC";*/
 
 
-    auto referenceInfo = SequenceInfo::buildForReference(reference, k);
-    auto rInfo = SequenceInfo::buildForSubstring(r, k);
-
-    size_t snpPosition = algorithms::findSNPPosition(referenceInfo, rInfo);
+    auto begin = std::chrono::steady_clock::now();
+    size_t snpPosition = algorithms::findSNPPosition(reference, r, k);
+    auto end = std::chrono::steady_clock::now();
 
     if (snpPosition == -1) {
         std::cout << "SNP not found." << std::endl;
     } else {
         std::cout << "Found SNP at reference position " << snpPosition << std::endl;
     }
-
+    std::cout << "Run matching in " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " seconds" << std::endl;
     return 0;
 }

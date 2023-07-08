@@ -6,6 +6,8 @@
 #include "util.h"
 #include <string>
 #include <vector>
+#include <fstream>
+#include <iostream>
 
 
 std::vector<std::string> util::buildAllSpacedPatterns(size_t k) {
@@ -34,11 +36,24 @@ std::vector<std::string> util::buildRemainingSpacedPatterns(size_t k) {
     return result;
 }
 
-void util::addToHashTable(uint64_t hash, size_t position, std::unordered_map<uint64_t, std::vector<size_t>> &hashTable) {
-    auto iterator = hashTable.find(hash);
-    if (iterator == hashTable.end()) {
-        hashTable[hash] = std::vector<size_t>(1, position);
-    } else {
-        hashTable[hash].push_back(position);
+
+
+std::shared_ptr<std::string> util::readFromFASTA(const std::string &path, bool skipNonACGT) {
+    std::ifstream fileStream(path);
+    std::shared_ptr<std::string> line = std::make_shared<std::string>();
+    std::getline(fileStream, *line);
+    if (line->length() == 0 || (*line)[0] != '>') {
+        throw std::runtime_error("Wrong file format");
     }
+
+    *line = "";
+    char c;
+
+    while (fileStream.get(c) && c != '>') {
+        if ((!skipNonACGT || c == 'A' || c == 'C' || c == 'G' || c == 'T') && c != '\n' && c != '\0') {
+            line->push_back(c);
+        }
+    }
+
+    return line;
 }
