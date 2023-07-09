@@ -2,21 +2,25 @@
 // Created by Gabriele Canesi on 07/07/23.
 //
 
-#include "MinHashInfo.h"
+#include "AlignmentFree.h"
 #include <ankerl/unordered_dense.h>
 #include <nthash/nthash.hpp>
 #include <random>
 #include <vector>
 
-MinHashInfo::MinHashInfo(const std::string &reference, const std::string &r, size_t k) : substringBloomFilter(10000000) {
+AlignmentFree::AlignmentFree(const std::string &reference, const std::string &r, size_t k) : substringBloomFilter(10000000) {
 
 
     auto intervals = reference.length() / r.length();
     jaccards = std::vector<double>(intervals, 0.0);
 
     nthash::NtHash nth(r, 1, k);
+    M_rKmers = std::vector<uint64_t>(r.length(), 0);
+    size_t i = 0;
     while (nth.roll()) {
         substringBloomFilter.insert(nth.hashes()[0]);
+        M_rKmers[i] = nth.hashes()[0];
+        ++i;
     }
 
     nthash::NtHash nth2(reference, 1, k);
@@ -40,17 +44,13 @@ MinHashInfo::MinHashInfo(const std::string &reference, const std::string &r, siz
 }
 
 
-void MinHashInfo::computeSignature() {
-
-}
-
-
-const std::vector<double>& MinHashInfo::computeJaccard() {
+const std::vector<double>& AlignmentFree::getJaccard() {
     return jaccards;
 }
 
-
-
-const std::vector<size_t>& MinHashInfo::candidates() {
-    return M_candidates;
+const std::vector<uint64_t>& AlignmentFree::rKmers() {
+    return M_rKmers;
 }
+
+
+

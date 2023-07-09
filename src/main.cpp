@@ -14,12 +14,12 @@ int main(int argc, char **argv) {
     auto reference = util::readFromFASTA(argv[2], true);
     auto r = util::readFromFASTA(argv[3], true);
 
-
-    *r = reference->substr(185293855, 600000);
-    if ( (*r)[3] != 'T'){
-        (*r)[3] = 'T';
+    auto length = 60000000;
+    *r = reference->substr(100000000, length);
+    if ( (*r)[length - 3] != 'T'){
+        (*r)[length - 3] = 'T';
     } else {
-        (*r)[3] = 'A';
+        (*r)[length - 3] = 'A';
     }
 
     std::cout << "Reference length: " << reference->length() << std::endl;
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
 
     auto begin = std::chrono::steady_clock::now();
-    size_t snpPosition = algorithms::findSNPPosition(reference, r, k);
+    size_t snpPosition = algorithms::findSNPPositionApprox(reference, r, k);
     auto end = std::chrono::steady_clock::now();
 
     if (snpPosition == -1) {
