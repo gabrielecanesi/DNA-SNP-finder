@@ -15,14 +15,14 @@ int main(int argc, char **argv) {
     auto r = util::readFromFASTA(argv[3], true);
 
 
-    *r = reference->substr(180000000, 60000);
+    *r = reference->substr(185293855, 600000);
     if ( (*r)[3] != 'T'){
         (*r)[3] = 'T';
     } else {
         (*r)[3] = 'A';
     }
 
-    std::cout << reference->length() << std::endl;
+    std::cout << "Reference length: " << reference->length() << std::endl;
 
     /*std::shared_ptr<std::string> reference = std::make_shared<std::string>("RRAACTGTACGGGGGGGGCAAGTGCAAAAAAAAATAAAAAAAA");
     std::shared_ptr<std::string> r = std::make_shared<std::string>("GGGGGGGGCAAGTGTAAAAAAAAATA");
@@ -44,5 +44,15 @@ int main(int argc, char **argv) {
         std::cout << "Found SNP at reference position " << snpPosition << std::endl;
     }
     std::cout << "Run matching in " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " seconds" << std::endl;
+    /*begin = std::chrono::steady_clock::now();
+    snpPosition = algorithms::findSNPPositionBasic(reference, r, k);
+    if (snpPosition == -1) {
+        std::cout << "SNP not found." << std::endl;
+    } else {
+        std::cout << "Found SNP at reference position " << snpPosition << std::endl;
+    }
+    end = std::chrono::steady_clock::now();
+    std::cout << "Run matching in " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " seconds" << std::endl;
+*/
     return 0;
 }

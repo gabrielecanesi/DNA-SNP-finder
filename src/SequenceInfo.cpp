@@ -14,7 +14,7 @@ SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> 
     while (nth.roll()) {
         if (buildHashTable){
             for (size_t i = 0; i < k(); ++i) {
-                util::addToHashTable(nth.hashes()[i], nth.get_pos(), hashTable);
+               util::addToHashTable(nth.hashes()[i], nth.get_pos(), hashTable);
             }
 
             ++j;
