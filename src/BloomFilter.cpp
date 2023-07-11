@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <iostream>
 
-std::vector<uint64_t> BloomFilter::hashValues = {6803, 5347};
-
+//std::vector<uint64_t> BloomFilter::hashValues = {6803, 5347};
+std::vector<uint64_t> BloomFilter::hashValues = {31, 53};
 BloomFilter::BloomFilter(size_t size) : M_numberOfInserts(0) , size(size) {
     if (size % sizeof(bool) > 0) {
         this->size = ((size + sizeof(bool)) / sizeof(bool)) * sizeof(bool);
@@ -26,6 +26,10 @@ size_t BloomFilter::hash(uint64_t element, size_t number) const {
 
 
 void BloomFilter::insert(uint64_t element) {
+    if (contains(element)) {
+        return;
+    }
+
     for (int i = 0; i < 2; ++i) {
         auto position = hash(element, i);
         bool toInsert = 0b10000000 >> (position % sizeof(bool));
@@ -33,7 +37,7 @@ void BloomFilter::insert(uint64_t element) {
     }
 }
 
-bool BloomFilter::contains(uint64_t element) {
+bool BloomFilter::contains(uint64_t element) const {
     bool match = true;
     for (size_t i = 0; i < 2 && match; ++i) {
         auto position = hash(element, i);

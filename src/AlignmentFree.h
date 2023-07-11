@@ -18,9 +18,10 @@ class AlignmentFree {
     std::vector<uint64_t> M_rKmers;
 
 public:
-    AlignmentFree(const std::string &reference, const std::string &r, size_t k);
+    AlignmentFree(const std::string &reference, const std::string &r, size_t k, size_t size);
     const std::vector<uint64_t>& rKmers();
     const std::vector<double>& getJaccard();
+    const BloomFilter& getSubstringBloomFilter();
 };
 
 #endif //SPACEDSEEDS_ALIGNMENTFREE_H

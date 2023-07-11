@@ -22,7 +22,7 @@ public:
     BloomFilter(size_t size);
     ~BloomFilter();
     void insert(uint64_t element);
-    bool contains(uint64_t element);
+    bool contains(uint64_t element) const;
     size_t elementCount() const;
     void clear();
 };

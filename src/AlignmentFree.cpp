@@ -5,13 +5,12 @@
 #include "AlignmentFree.h"
 #include <ankerl/unordered_dense.h>
 #include <nthash/nthash.hpp>
-#include <random>
 #include <vector>
 
-AlignmentFree::AlignmentFree(const std::string &reference, const std::string &r, size_t k) : substringBloomFilter(10000000) {
+AlignmentFree::AlignmentFree(const std::string &reference, const std::string &r, size_t k, size_t size) : substringBloomFilter(100000000) {
 
 
-    auto intervals = reference.length() / r.length();
+    auto intervals = reference.length() / size;
     jaccards = std::vector<double>(intervals, 0.0);
 
     nthash::NtHash nth(r, 1, k);
@@ -27,13 +26,13 @@ AlignmentFree::AlignmentFree(const std::string &reference, const std::string &r,
 
     for (size_t seq = 0; seq < intervals; ++seq) {
         size_t matches = 0;
-        for (size_t j = 0; j <= r.length() - k; ++j) {
+        for (size_t j = 0; j <= size - k; ++j) {
             nth2.roll();
             if (substringBloomFilter.contains(nth2.hashes()[0])) {
                 ++matches;
             }
         }
-        jaccards[seq] = (double) matches / (double) (r.length() - k);
+        jaccards[seq] = (double) matches / (double) (size);
 
         for (size_t j = 0; j < k - 1; ++j) {
             nth2.roll();
@@ -53,4 +52,6 @@ const std::vector<uint64_t>& AlignmentFree::rKmers() {
 }
 
 
-
+const BloomFilter& AlignmentFree::getSubstringBloomFilter() {
+    return substringBloomFilter;
+}
