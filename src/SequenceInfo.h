@@ -19,14 +19,14 @@ class SequenceInfo {
     ankerl::unordered_dense::map<uint64_t, std::vector<size_t>> hashTable;
     std::vector<size_t> nullVector;
     size_t M_k;
-    //BloomFilter filter;
-    ankerl::unordered_dense::set<uint64_t> filter;
     std::vector<std::pair<uint64_t, size_t>> orderedRHashes;
+    std::vector<uint64_t> kmers;
 
-    SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, const ankerl::unordered_dense::set<uint64_t>& toCompare, bool buildHashTable = true);
+    SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare, bool buildHashTable = true);
     SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, bool buildHashTable = true);
+    void extractKmers();
 public:
-    static SequenceInfo buildForReference(const char *sequence, size_t k, size_t length, const ankerl::unordered_dense::set<uint64_t>& rFilter);
+    static SequenceInfo buildForReference(const char *sequence, size_t k, size_t length, const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& rFilter);
     static SequenceInfo buildForSubstring(const char *sequence, size_t k, size_t length);
 
     uint64_t hashAtPosition(size_t position) const;
@@ -34,9 +34,9 @@ public:
     const char *sequence();
     size_t k() const;
     size_t sequenceLength() const;
-    const ankerl::unordered_dense::set<uint64_t>& getFilter() const;
-    const std::vector<std::pair<uint64_t, size_t>>& getOrderedRHashes() const;
-
+    const std::vector<uint64_t> exactKmers() const;
+    const std::vector<std::pair<uint64_t , size_t>>& orderedSubstringHashes() const;
+    const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& positionsHashTable() const;
 };
 
 

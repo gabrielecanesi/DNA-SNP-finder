@@ -15,7 +15,8 @@ int main(int argc, char **argv) {
     auto r = util::readFromFASTA(argv[3], true);
 
     auto length = 6000000;
-    *r = reference->substr(100000000, length);
+    //*r = reference->substr(100000000, length);
+    *r = reference->substr(reference->length() - length, length);
 
     if ((*r)[length - 3] != 'T'){
         (*r)[length - 3] = 'T';
@@ -25,6 +26,7 @@ int main(int argc, char **argv) {
 
 
     std::cout << "Reference length: " << reference->length() << std::endl;
+    std::cout << "r length: " << r->length() << std::endl;
 
     //std::shared_ptr<std::string> reference = std::make_shared<std::string>("RRAACTGTACGGGGGGGGCAAGTGCAAAAAAAAATAAAAAAAA");
     //std::shared_ptr<std::string> r = std::make_shared<std::string>("GGGGGGGGCAAGTGTAAAAAAAAATA");

@@ -6,10 +6,9 @@
 #include "util.h"
 #include "nthash/nthash.hpp"
 #include "BloomFilter.h"
-#include "util.h"
 
-SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,  const ankerl::unordered_dense::set<uint64_t>& toCompare, bool buildHashTable) :
-        M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length), filter(0){
+SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,  const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare, bool buildHashTable) :
+        M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length) {
 
     ankerl::unordered_dense::map<uint64_t, size_t> frequencies;
     nthash::SeedNtHash nth(sequence, sequence_length, seeds, 1, M_k);
@@ -19,42 +18,43 @@ SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> 
             if (toCompare.contains(nth.hashes()[i])) {
                 util::addToHashTable(nth.hashes()[i], nth.get_pos(), hashTable);
 
-                /*auto iterator = frequencies.find(nth.hashes()[i]);
+                auto iterator = frequencies.find(nth.hashes()[i]);
                 if (iterator == frequencies.end()) {
                     frequencies.insert({nth.hashes()[i], 1});
                 } else {
                     ++iterator->second;
-                }*/
+                }
            }
         }
-        firstSeedsHashes.push_back(nth.hashes()[0]);
     }
 
-    /*for (auto pair : frequencies) {
+    for (auto pair : frequencies) {
         orderedRHashes.push_back(pair);
     }
 
     std::sort(orderedRHashes.begin(), orderedRHashes.end(), [](const auto &x, const auto &y){
         return x.second < y.second;
-    });*/
+    });
+
+    extractKmers();
 }
 
 SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, bool buildHashTable) :
-        M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length), filter(){
+        M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length) {
 
     nthash::SeedNtHash nth(sequence, sequence_length, seeds, 1, M_k, 0);
     for (size_t i = 0; i <= length - k(); ++i) {
         size_t limit = i < length - k() ? 1 : k();
         nth.roll();
         for (int j = 0; j < limit; ++j) {
-            filter.insert(nth.hashes()[j]);
             firstSeedsHashes.push_back(nth.hashes()[j]);
-            util::addToHashTable(nth.hashes()[j], nth.get_pos(), hashTable);
+            util::addToHashTable(nth.hashes()[j], nth.get_pos() + j, hashTable);
         }
     }
+    extractKmers();
 }
 
-SequenceInfo SequenceInfo::buildForReference(const char *sequence, size_t k, size_t length, const ankerl::unordered_dense::set<uint64_t>& rFilter) {
+SequenceInfo SequenceInfo::buildForReference(const char *sequence, size_t k, size_t length, const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& rFilter) {
     auto pattern = util::buildAllSpacedPatterns(k);
     return {sequence, pattern, length, rFilter, true};
 }
@@ -64,6 +64,12 @@ SequenceInfo SequenceInfo::buildForSubstring(const char *sequence, size_t k, siz
     return {sequence, pattern, length, false};
 }
 
+void SequenceInfo::extractKmers() {
+    nthash::NtHash nth(sequence(), sequence_length, 1, k(), 0);
+    while (nth.roll()) {
+        kmers.push_back(nth.hashes()[0]);
+    }
+}
 
 const char * SequenceInfo::sequence() {
     return M_sequence;
@@ -90,10 +96,15 @@ size_t SequenceInfo::sequenceLength() const {
     return sequence_length;
 }
 
-const ankerl::unordered_dense::set<uint64_t>& SequenceInfo::getFilter() const {
-    return filter;
+
+const std::vector<uint64_t> SequenceInfo::exactKmers() const {
+    return kmers;
 }
 
-const std::vector<std::pair<uint64_t, size_t>>& SequenceInfo::getOrderedRHashes() const {
+const std::vector<std::pair<uint64_t, size_t>>& SequenceInfo::orderedSubstringHashes() const {
     return orderedRHashes;
+}
+
+const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& SequenceInfo::positionsHashTable() const {
+    return hashTable;
 }

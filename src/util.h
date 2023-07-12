@@ -11,10 +11,16 @@
 #include <ankerl/unordered_dense.h>
 #include <iostream>
 
+template <typename  K, typename V>
+std::ostream& operator<<(std::ostream &out, const std::pair<K, V> &pair) {
+    out << "(" << pair.first << ", " << pair.second << ")";
+    return out;
+}
+
 template <typename  T>
 std::ostream& operator<<(std::ostream &out, const std::vector<T> &vector) {
     out << "[";
-    for (size_t i = 0; i < vector.size() && vector.size() >= 0; ++i) {
+    for (size_t i = 0; i < vector.size() && vector.size() > 0; ++i) {
         out << vector[i] << ", ";
     }
     if (vector.size() > 0) {
@@ -24,6 +30,8 @@ std::ostream& operator<<(std::ostream &out, const std::vector<T> &vector) {
 
     return out;
 }
+
+
 
 namespace util {
     std::vector<std::string> buildAllSpacedPatterns(size_t k);
