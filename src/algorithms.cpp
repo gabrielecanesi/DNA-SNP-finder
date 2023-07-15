@@ -5,39 +5,40 @@
 #include "algorithms.h"
 #include <cstddef>
 #include "SequenceInfo.h"
-#include "AlignmentFree.h"
+#include "SequenceFilter.h"
 #include <iostream>
 #include "util.h"
 #include <nthash/nthash.hpp>
 
-size_t algorithms::findSNPPosition(const std::shared_ptr<std::string> &reference, const std::shared_ptr<std::string> &r, size_t k) {
+size_t algorithms::findSNPPosition(const std::shared_ptr<std::string> &reference, const std::shared_ptr<std::string> &r,
+                                   size_t k, size_t firstK) {
 
-    size_t size = ceil((double) r->length() / 2.0);
-    size_t firstK = 25;
-     AlignmentFree info(*reference, *r, firstK, size);
-     auto jaccardsWithR = info.getJaccard();
-     std::vector<size_t> indices(jaccardsWithR.size(), 0);
-     for (int i = 0; i < jaccardsWithR.size(); ++i) {
+    size_t size = ceil((double) r->length() / 2);
+     SequenceFilter info(*reference, *r, firstK, size);
+     auto& similarities = info.getJaccard();
+     std::vector<size_t> indices(similarities.size(), 0);
+     for (int i = 0; i < similarities.size(); ++i) {
          indices[i] = i;
      }
 
      std::sort(indices.begin(), indices.end(), [&](size_t a, size_t b) {
-         return jaccardsWithR[a] > jaccardsWithR[b];
+         return similarities[a] > similarities[b];
      });
 
-     std::cout << jaccardsWithR[indices[0]] << ", " << indices[0] * size << std::endl;
+     std::cout << similarities[indices[0]] << ", " << indices[0] * size << ", " << indices[0] << ", " << indices.size() << std::endl;
+     //std::cout << similarities << std::endl;
      std::cout << "Completed similarities computation" << std::endl;
 
     auto rInfo = SequenceInfo::buildForSubstring(r->c_str(), k, r->length());
     auto& rKmers = rInfo.exactKmers();
     auto& bloomFilter = rInfo.positionsHashTable();
 
-     for (size_t chunk = 0; chunk < jaccardsWithR.size() && jaccardsWithR[indices[chunk]] >= 0.8; ++chunk) {
+     for (size_t chunk = 0; chunk < similarities.size() && similarities[indices[chunk]] >= 0.5; ++chunk) {
 
          size_t start = indices[chunk] > 0 ? 1 : 0;
          size_t end = indices[chunk] < indices.size() - 1 ? 1 : 0;
          size_t blockSize = size * (1 + start + end);
-         if (indices[chunk] == jaccardsWithR.size() - 1) {
+         if (indices[chunk] == similarities.size() - 1 || (indices.size() > 1 && indices[chunk] == similarities.size() - 2)) {
              blockSize += reference->length() % size;
          }
 
@@ -45,13 +46,12 @@ size_t algorithms::findSNPPosition(const std::shared_ptr<std::string> &reference
          auto& referenceKmers = referenceInfo.exactKmers();
          std::cout << "Built" << std::endl;
 
+
          for (auto& pair : referenceInfo.orderedSubstringHashes()) {
+             //std::cout << pair << std::endl;
              for (size_t i : rInfo.positionsForHash(pair.first)) {
                  auto &positionsForHash = referenceInfo.positionsForHash(rInfo.hashAtPosition(i));
-                 if (i == r->length() - 3) {
-                     std::cout << rInfo.hashAtPosition(i) << std::endl;
-                     std::cout << i << ", " << positionsForHash << std::endl;
-                 }
+
                  for (size_t refPosition : positionsForHash) {
 
                      size_t seedStartOffset = 0;
@@ -84,7 +84,7 @@ size_t algorithms::findSNPPosition(const std::shared_ptr<std::string> &reference
                              }
                          }
 
-                         for (size_t j = 1; match && j * k + i < rInfo.sequenceLength() - k; ++j) {
+                         for (size_t j = 1; match && j * k + i < r->length() - k; ++j) {
                              if (referenceKmers[refPosition + k * j] != rKmers[i + k * j]) {
                                  match = false;
                              }
@@ -115,14 +115,14 @@ size_t algorithms::findSNPPositionBasic(const std::shared_ptr<std::string> &refe
         auto rInfo = SequenceInfo::buildForSubstring(r->c_str(), k, r->length());
 
 
-        for (size_t i = 0; i < rInfo.sequenceLength(); ++i) {
+        for (size_t i = 0; i < r->length(); ++i) {
             auto &positionsForHash = referenceInfo.positionsForHash(rInfo.hashAtPosition(i));
             //std::cout << "Matching positions: " << positionsForHash.size() << std::endl;
             for (size_t refPosition : positionsForHash) {
 
                 size_t seedStartOffset = 0;
-                if (i >= rInfo.sequenceLength() - k) {
-                    seedStartOffset = k - (rInfo.sequenceLength() - i);
+                if (i >= r->length() - k) {
+                    seedStartOffset = k - (r->length() - i);
                 }
 
                 if (referenceInfo.sequence()[refPosition + seedStartOffset] != rInfo.sequence()[i]) {
@@ -138,15 +138,15 @@ size_t algorithms::findSNPPositionBasic(const std::shared_ptr<std::string> &refe
                         }
                     }
 
-                    for (size_t j = 1; j * k + i < rInfo.sequenceLength() - k && match; ++j) {
+                    for (size_t j = 1; j * k + i < r->length() - k && match; ++j) {
                         if (referenceInfo.hashAtPosition(refPosition + k * j) != rInfo.hashAtPosition(i + k * j) ||
                             referenceInfo.sequence()[refPosition + k * j] != rInfo.sequence()[i + k * j]) {
                             match = false;
                         }
                     }
 
-                    if (match && seedStartOffset == 0 && (rInfo.hashAtPosition(rInfo.sequenceLength() - k) !=  referenceInfo.hashAtPosition(refPosition - i + (rInfo.sequenceLength()- k)) ||
-                                                          rInfo.sequence()[rInfo.sequenceLength() - k] != referenceInfo.sequence()[refPosition - i + (rInfo.sequenceLength() - k)])) {
+                    if (match && seedStartOffset == 0 && (rInfo.hashAtPosition(r->length() - k) !=  referenceInfo.hashAtPosition(refPosition - i + (r->length()- k)) ||
+                                                          rInfo.sequence()[r->length() - k] != referenceInfo.sequence()[refPosition - i + (r->length() - k)])) {
                         match = false;
                     }
 
@@ -179,7 +179,7 @@ size_t algorithms::findSNPPositionBasic(const std::shared_ptr<std::string> &refe
 size_t algorithms::findSNPPositionApprox(const std::shared_ptr<std::string> &reference, const std::shared_ptr<std::string> &r, size_t k) {
 
     auto size = r->length();
-    AlignmentFree info(*reference, *r, k, size);
+    SequenceFilter info(*reference, *r, k, size);
     auto jaccardsWithR = info.getJaccard();
     std::vector<size_t> indices(jaccardsWithR.size(), 0);
     for (int i = 1; i < jaccardsWithR.size(); ++i) {

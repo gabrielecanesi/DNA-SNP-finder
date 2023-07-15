@@ -10,31 +10,20 @@
 SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,  const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare, bool buildHashTable) :
         M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length) {
 
-    ankerl::unordered_dense::map<uint64_t, size_t> frequencies;
+
     nthash::SeedNtHash nth(sequence, sequence_length, seeds, 1, M_k);
 
     while (nth.roll()) {
         for (size_t i = 0; i < k(); ++i) {
             if (toCompare.contains(nth.hashes()[i])) {
                 util::addToHashTable(nth.hashes()[i], nth.get_pos(), hashTable);
-
-                auto iterator = frequencies.find(nth.hashes()[i]);
-                if (iterator == frequencies.end()) {
-                    frequencies.insert({nth.hashes()[i], 1});
-                } else {
-                    ++iterator->second;
-                }
            }
         }
     }
 
-    for (auto pair : frequencies) {
-        orderedRHashes.push_back(pair);
+    for (auto& pair : hashTable) {
+        orderedRHashes.insert({pair.first, pair.second.size()});
     }
-
-    std::sort(orderedRHashes.begin(), orderedRHashes.end(), [](const auto &x, const auto &y){
-        return x.second < y.second;
-    });
 
     extractKmers();
 }
@@ -97,11 +86,11 @@ size_t SequenceInfo::sequenceLength() const {
 }
 
 
-const std::vector<uint64_t> SequenceInfo::exactKmers() const {
+const std::vector<uint64_t>& SequenceInfo::exactKmers() const {
     return kmers;
 }
 
-const std::vector<std::pair<uint64_t, size_t>>& SequenceInfo::orderedSubstringHashes() const {
+const std::set<std::pair<uint64_t, size_t>, LessFrequent>& SequenceInfo::orderedSubstringHashes() const {
     return orderedRHashes;
 }
 

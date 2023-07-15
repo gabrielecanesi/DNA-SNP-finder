@@ -2,12 +2,12 @@
 // Created by Gabriele Canesi on 07/07/23.
 //
 
-#include "AlignmentFree.h"
+#include "SequenceFilter.h"
 #include <ankerl/unordered_dense.h>
 #include <nthash/nthash.hpp>
 #include <vector>
 
-AlignmentFree::AlignmentFree(const std::string &reference, const std::string &r, size_t k, size_t size) : substringBloomFilter(100000000) {
+SequenceFilter::SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size) : substringBloomFilter(100000000) {
 
 
     auto intervals = reference.length() / size;
@@ -43,15 +43,15 @@ AlignmentFree::AlignmentFree(const std::string &reference, const std::string &r,
 }
 
 
-const std::vector<double>& AlignmentFree::getJaccard() {
+const std::vector<double>& SequenceFilter::getJaccard() {
     return jaccards;
 }
 
-const std::vector<uint64_t>& AlignmentFree::rKmers() {
+const std::vector<uint64_t>& SequenceFilter::rKmers() {
     return M_rKmers;
 }
 
 
-const BloomFilter& AlignmentFree::getSubstringBloomFilter() {
+const BloomFilter& SequenceFilter::getSubstringBloomFilter() {
     return substringBloomFilter;
 }

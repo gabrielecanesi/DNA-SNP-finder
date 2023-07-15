@@ -11,6 +11,13 @@
 #include <list>
 #include <ankerl/unordered_dense.h>
 #include "BloomFilter.h"
+#include <set>
+
+struct LessFrequent {
+    bool operator()(const std::pair<uint64_t, size_t>& a, const std::pair<uint64_t, size_t>& b) const {
+        return a.second <= b.second;
+    }
+};
 
 class SequenceInfo {
     const char *M_sequence;
@@ -19,8 +26,9 @@ class SequenceInfo {
     ankerl::unordered_dense::map<uint64_t, std::vector<size_t>> hashTable;
     std::vector<size_t> nullVector;
     size_t M_k;
-    std::vector<std::pair<uint64_t, size_t>> orderedRHashes;
+    std::set<std::pair<uint64_t, size_t>, LessFrequent> orderedRHashes;
     std::vector<uint64_t> kmers;
+
 
     SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare, bool buildHashTable = true);
     SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, bool buildHashTable = true);
@@ -34,8 +42,8 @@ public:
     const char *sequence();
     size_t k() const;
     size_t sequenceLength() const;
-    const std::vector<uint64_t> exactKmers() const;
-    const std::vector<std::pair<uint64_t , size_t>>& orderedSubstringHashes() const;
+    const std::vector<uint64_t>& exactKmers() const;
+    const std::set<std::pair<uint64_t, size_t>, LessFrequent>& orderedSubstringHashes() const;
     const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& positionsHashTable() const;
 };
 
