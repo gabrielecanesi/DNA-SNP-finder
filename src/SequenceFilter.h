@@ -11,17 +11,18 @@
 #include <unordered_set>
 #include <set>
 #include "BloomFilter.h"
+#include <bloom_filter.hpp>
 
 class SequenceFilter {
-    BloomFilter substringBloomFilter;
-    std::vector<double> jaccards;
+    bloom_filter substringBloomFilter;
+    std::vector<double> similarities;
     std::vector<uint64_t> M_rKmers;
 
 public:
-    SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size);
+    SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size, double bloomFilterThreshold);
     const std::vector<uint64_t>& rKmers();
-    const std::vector<double>& getJaccard();
-    const BloomFilter& getSubstringBloomFilter();
+    const std::vector<double>& getSimilarities();
+    const bloom_filter& getSubstringBloomFilter();
 };
 
 #endif //SPACEDSEEDS_SEQUENCEFILTER_H

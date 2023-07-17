@@ -7,14 +7,20 @@
 #include <nthash/nthash.hpp>
 #include <vector>
 
-SequenceFilter::SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size) : substringBloomFilter(100000000) {
+SequenceFilter::SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size, double bloomFilterThreshold)  {
 
 
-    auto intervals = reference.length() / size;
-    jaccards = std::vector<double>(intervals, 0.0);
+    bloom_parameters parameters;
+    parameters.projected_element_count = r.length();
+    parameters.false_positive_probability = bloomFilterThreshold;
+    parameters.compute_optimal_parameters();
+    substringBloomFilter = bloom_filter(parameters);
+
+    size_t intervals = reference.length() / size;
+    similarities = std::vector<double>(intervals, 0.0);
 
     nthash::NtHash nth(r, 1, k);
-    M_rKmers = std::vector<uint64_t>(r.length(), 0);
+    M_rKmers = std::vector<uint64_t>(r.length() - k + 1, 0);
     size_t i = 0;
     while (nth.roll()) {
         substringBloomFilter.insert(nth.hashes()[0]);
@@ -32,19 +38,17 @@ SequenceFilter::SequenceFilter(const std::string &reference, const std::string &
                 ++matches;
             }
         }
-        jaccards[seq] = (double) matches / (double) (size);
+        similarities[seq] = (double) matches / (double) (size);
 
         for (size_t j = 0; j < k - 1; ++j) {
             nth2.roll();
         }
     }
-
-    std::cout << "Ended insertion and computation of Jaccard metric" << std::endl;
 }
 
 
-const std::vector<double>& SequenceFilter::getJaccard() {
-    return jaccards;
+const std::vector<double>& SequenceFilter::getSimilarities() {
+    return similarities;
 }
 
 const std::vector<uint64_t>& SequenceFilter::rKmers() {
@@ -52,6 +56,6 @@ const std::vector<uint64_t>& SequenceFilter::rKmers() {
 }
 
 
-const BloomFilter& SequenceFilter::getSubstringBloomFilter() {
+const bloom_filter& SequenceFilter::getSubstringBloomFilter() {
     return substringBloomFilter;
 }

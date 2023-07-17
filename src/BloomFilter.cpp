@@ -61,3 +61,6 @@ void BloomFilter::clear() {
 BloomFilter::~BloomFilter() {
     delete[] array;
 }
+
+BloomFilter::BloomFilter() : BloomFilter(100){}
+

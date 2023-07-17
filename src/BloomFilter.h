@@ -19,7 +19,8 @@ class BloomFilter {
     size_t hash(uint64_t element, size_t number) const;
 
 public:
-    BloomFilter(size_t size);
+    BloomFilter();
+    explicit BloomFilter(size_t size);
     ~BloomFilter();
     void insert(uint64_t element);
     bool contains(uint64_t element) const;
