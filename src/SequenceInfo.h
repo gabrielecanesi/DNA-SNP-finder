@@ -10,7 +10,6 @@
 #include <vector>
 #include <list>
 #include <ankerl/unordered_dense.h>
-#include "BloomFilter.h"
 #include <set>
 
 struct LessFrequent {
@@ -39,7 +38,7 @@ public:
 
     uint64_t hashAtPosition(size_t position) const;
     const std::vector<size_t>& positionsForHash(uint64_t hash) const;
-    const char *sequence();
+    const char *sequence() const;
     size_t k() const;
     size_t sequenceLength() const;
     const std::vector<uint64_t>& exactKmers() const;

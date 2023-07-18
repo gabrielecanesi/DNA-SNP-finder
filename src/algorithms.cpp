@@ -8,30 +8,30 @@
 #include <iostream>
 
 size_t algorithms::findSNPPosition(const std::shared_ptr<std::string> &reference, const std::shared_ptr<std::string> &r,
-                                   size_t k, size_t firstK, double bloomFilterThreshold) {
+                                   size_t k, size_t firstK, double bloomFilterThreshold, double blockThreshold) {
 
 
     size_t size = ceil((double) r->length() / 2);
-     SequenceFilter filter(*reference, *r, firstK, size, bloomFilterThreshold);
-     auto& similarities = filter.getSimilarities();
-     std::vector<size_t> indices(similarities.size(), 0);
-     for (int i = 0; i < similarities.size(); ++i) {
-         indices[i] = i;
-     }
+    SequenceFilter filter(*reference, *r, firstK, size, bloomFilterThreshold);
+    auto& similarities = filter.getSimilarities();
+    std::vector<size_t> indices(similarities.size(), 0);
+    for (int i = 0; i < similarities.size(); ++i) {
+        indices[i] = i;
+    }
 
-     std::sort(indices.begin(), indices.end(), [&](size_t a, size_t b) {
-         return similarities[a] > similarities[b];
-     });
+    std::sort(indices.begin(), indices.end(), [&](size_t a, size_t b) {
+        return similarities[a] > similarities[b];
+    });
 
-     std::cout << similarities[indices[0]] << ", " << indices[0] * size << ", " << indices[0] << ", " << indices.size() << std::endl;
-     //std::cout << similarities << std::endl;
-     std::cout << "Completed similarities computation" << std::endl;
+    std::cout << similarities[indices[0]] << ", " << indices[0] * size << ", " << indices[0] << ", " << indices.size() << std::endl;
+    //std::cout << similarities << std::endl;
+    std::cout << "Completed similarities computation" << std::endl;
 
     auto rInfo = SequenceInfo::buildForSubstring(r->c_str(), k, r->length());
     auto& rKmers = rInfo.exactKmers();
     auto& bloomFilter = rInfo.positionsHashTable();
 
-     for (size_t chunk = 0; chunk < similarities.size() && similarities[indices[chunk]] >= 0.5; ++chunk) {
+     for (size_t chunk = 0; chunk < similarities.size() && similarities[indices[chunk]] >= blockThreshold; ++chunk) {
 
          size_t start = indices[chunk] > 0 ? 1 : 0;
          size_t end = indices[chunk] < indices.size() - 1 ? 1 : 0;

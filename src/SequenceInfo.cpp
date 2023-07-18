@@ -5,7 +5,6 @@
 #include "SequenceInfo.h"
 #include "util.h"
 #include "nthash/nthash.hpp"
-#include "BloomFilter.h"
 
 SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,  const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare, bool buildHashTable) :
         M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length) {
@@ -60,7 +59,7 @@ void SequenceInfo::extractKmers() {
     }
 }
 
-const char * SequenceInfo::sequence() {
+const char * SequenceInfo::sequence() const {
     return M_sequence;
 }
 

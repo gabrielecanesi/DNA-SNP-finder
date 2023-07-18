@@ -6,12 +6,13 @@
 #include <ankerl/unordered_dense.h>
 #include <nthash/nthash.hpp>
 #include <vector>
+#include <cmath>
 
 SequenceFilter::SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size, double bloomFilterThreshold)  {
 
 
     bloom_parameters parameters;
-    parameters.projected_element_count = r.length();
+    parameters.projected_element_count = std::min(r.length(), (size_t) std::pow(4, k));
     parameters.false_positive_probability = bloomFilterThreshold;
     parameters.compute_optimal_parameters();
     substringBloomFilter = bloom_filter(parameters);
