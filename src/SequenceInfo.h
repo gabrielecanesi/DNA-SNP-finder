@@ -29,11 +29,15 @@ class SequenceInfo {
     std::vector<uint64_t> kmers;
 
 
-    SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare, bool buildHashTable = true);
+    SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,
+                 const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare,
+                 const std::vector<uint64_t>& rKmers, bool buildHashTable = true);
     SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, bool buildHashTable = true);
     void extractKmers();
 public:
-    static SequenceInfo buildForReference(const char *sequence, size_t k, size_t length, const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& rFilter);
+    static SequenceInfo buildForReference(const char *sequence, size_t k, size_t length,
+                                          const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& rFilter,
+                                          const std::vector<uint64_t>& rKmers);
     static SequenceInfo buildForSubstring(const char *sequence, size_t k, size_t length);
 
     uint64_t hashAtPosition(size_t position) const;

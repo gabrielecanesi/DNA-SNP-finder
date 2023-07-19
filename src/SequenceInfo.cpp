@@ -6,16 +6,26 @@
 #include "util.h"
 #include "nthash/nthash.hpp"
 
-SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,  const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare, bool buildHashTable) :
+SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,
+                           const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare,
+                           const std::vector<uint64_t>& rKmers,
+                           bool buildHashTable) :
         M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length) {
 
 
     nthash::SeedNtHash nth(sequence, sequence_length, seeds, 1, M_k);
+    extractKmers();
 
     while (nth.roll()) {
         for (size_t i = 0; i < k(); ++i) {
-            if (toCompare.contains(nth.hashes()[i])) {
-                util::addToHashTable(nth.hashes()[i], nth.get_pos(), hashTable);
+            auto iterator = toCompare.find(nth.hashes()[i]);
+            if (iterator != toCompare.end()) {
+                for (auto& pos : iterator->second) {
+                    if (rKmers[pos] != kmers[nth.get_pos()]) {
+                        util::addToHashTable(nth.hashes()[i], nth.get_pos(), hashTable);
+                        break;
+                    }
+                }
            }
         }
     }
@@ -24,7 +34,7 @@ SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> 
         orderedRHashes.insert({pair.first, pair.second.size()});
     }
 
-    extractKmers();
+
 }
 
 SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, bool buildHashTable) :
@@ -42,9 +52,11 @@ SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> 
     extractKmers();
 }
 
-SequenceInfo SequenceInfo::buildForReference(const char *sequence, size_t k, size_t length, const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& rFilter) {
+SequenceInfo SequenceInfo::buildForReference(const char *sequence, size_t k, size_t length,
+                                             const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& rFilter,
+                                             const std::vector<uint64_t>& rKmers) {
     auto pattern = util::buildAllSpacedPatterns(k);
-    return {sequence, pattern, length, rFilter, true};
+    return {sequence, pattern, length, rFilter, rKmers, true};
 }
 
 SequenceInfo SequenceInfo::buildForSubstring(const char *sequence, size_t k, size_t length) {

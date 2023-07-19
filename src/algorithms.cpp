@@ -40,7 +40,7 @@ size_t algorithms::findSNPPosition(const std::shared_ptr<std::string> &reference
              blockSize += reference->length() % size;
          }
 
-         auto referenceInfo = SequenceInfo::buildForReference(reference->c_str() + (indices[chunk] - start) * size, k, blockSize, bloomFilter);
+         auto referenceInfo = SequenceInfo::buildForReference(reference->c_str() + (indices[chunk] - start) * size, k, blockSize, bloomFilter, rKmers);
          auto& referenceKmers = referenceInfo.exactKmers();
          std::cout << "Built" << std::endl;
 
@@ -111,7 +111,7 @@ size_t algorithms::findSNPPositionBasic(const std::shared_ptr<std::string> &refe
     auto& rKmers = rInfo.exactKmers();
 
 
-    auto referenceInfo = SequenceInfo::buildForReference(reference->c_str(), k, reference->length(), rInfo.positionsHashTable());
+    auto referenceInfo = SequenceInfo::buildForReference(reference->c_str(), k, reference->length(), rInfo.positionsHashTable(), rKmers);
     auto& referenceKmers = referenceInfo.exactKmers();
     std::cout << "Built" << std::endl;
 
