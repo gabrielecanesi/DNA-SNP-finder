@@ -14,7 +14,8 @@ Test::Test(const std::shared_ptr<std::string> &reference, const std::shared_ptr<
 
 
 void Test::run() {
-    auto length = 6000000;
+
+    auto length = 60000000;
     *r = reference->substr(reference->length() / 2, length);
 
     if ((*r)[length - 3] != 'T'){
@@ -23,8 +24,13 @@ void Test::run() {
         (*r)[length - 3] = 'A';
     }
 
+    std::cout << "Reference length: " << reference->length() << std::endl;
+    std::cout << "r length: " << r->length() << std::endl;
+
+
     auto begin = std::chrono::steady_clock::now();
-    size_t position = algorithms::findSNPPosition(reference, r, k, firstK, bloomFilterThreshold, firstThreshold);
+    size_t position = algorithms::findSNPPosition(reference, r, k, firstK, bloomFilterThreshold,
+                                                  firstThreshold);
     auto end = std::chrono::steady_clock::now();
 
     if (position == -1) {
@@ -32,7 +38,8 @@ void Test::run() {
     } else {
         std::cout << "Found SNP at r position " << position << std::endl;
     }
-    std::cout << "Run matching in " << (double) std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() / 1000 << " seconds" << std::endl;
+    std::cout << "Run matching in " << (double) std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                begin).count() / 1000 << " seconds" << std::endl;
     assert(position == length - 3);
 
     *reference = "RRAACTGTACGGGGGGGGCAAGTGCAAAAAAAAATAAAAAAAA";
