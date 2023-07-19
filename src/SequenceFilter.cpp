@@ -8,7 +8,8 @@
 #include <vector>
 #include <cmath>
 
-SequenceFilter::SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size, double bloomFilterThreshold)  {
+SequenceFilter::SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size,
+                               double bloomFilterThreshold)  {
 
 
     bloom_parameters parameters;

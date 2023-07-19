@@ -18,7 +18,8 @@ class SequenceFilter {
     std::vector<uint64_t> M_rKmers;
 
 public:
-    SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size, double bloomFilterThreshold);
+    SequenceFilter(const std::string &reference, const std::string &r, size_t k, size_t size,
+                   double bloomFilterThreshold);
     const std::vector<uint64_t>& rKmers();
     const std::vector<double>& getSimilarities();
     const bloom_filter& getSubstringBloomFilter();

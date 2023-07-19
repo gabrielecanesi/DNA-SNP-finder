@@ -32,7 +32,8 @@ class SequenceInfo {
     SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,
                  const ankerl::unordered_dense::map<uint64_t, std::vector<size_t>>& toCompare,
                  const std::vector<uint64_t>& rKmers, bool buildHashTable = true);
-    SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, bool buildHashTable = true);
+    SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,
+                 bool buildHashTable = true);
     void extractKmers();
 public:
     static SequenceInfo buildForReference(const char *sequence, size_t k, size_t length,

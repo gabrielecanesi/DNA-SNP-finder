@@ -37,7 +37,8 @@ namespace util {
     std::vector<std::string> buildAllSpacedPatterns(size_t k);
     std::vector<std::string> buildFirstSpacedPattern(size_t k);
     std::vector<std::string> buildRemainingSpacedPatterns(size_t k);
-    inline void addToHashTable(uint64_t hash, size_t position, ankerl::unordered_dense::map<uint64_t, std::vector<size_t>> &hashTable) {
+    inline void addToHashTable(uint64_t hash, size_t position, ankerl::unordered_dense::map<uint64_t,
+                               std::vector<size_t>> &hashTable) {
 
         auto iterator = hashTable.find(hash);
         if (iterator == hashTable.end()) {

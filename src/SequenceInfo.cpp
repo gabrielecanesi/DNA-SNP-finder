@@ -37,7 +37,8 @@ SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> 
 
 }
 
-SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length, bool buildHashTable) :
+SequenceInfo::SequenceInfo(const char *sequence, const std::vector<std::string> &seeds, size_t length,
+                           bool buildHashTable) :
         M_sequence(sequence), firstSeedsHashes(), hashTable(), M_k(seeds[0].length()), sequence_length(length) {
 
     nthash::SeedNtHash nth(sequence, sequence_length, seeds, 1, M_k, 0);
