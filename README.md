@@ -45,9 +45,8 @@ The algorithm is designed to follow these steps:
 <div style="text-align: center;">
   <img
   src="img/indices.svg" alt="Indices" style="display: block; height: 400px; margin: auto; padding: 0">
-
-
-  <figcaption>Overall structure of the indices used during the matching phase.</figcaption>
+   <br><br>
+  <figcaption style="text-align: center;">Overall structure of the indices used during the matching phase.</figcaption>
 </div>
 
 ## Benchmarks 
@@ -55,13 +54,13 @@ The algorithm is designed to follow these steps:
 <div style="text-align: center;">
   <img
   src="img/benchmarkWithMatch.svg" alt="Benchmarks with match" style="display: block; height: 300px; margin: auto; padding: 0">
-  <figcaption>Benchmarks with match.</figcaption>
+  <br><br><figcaption>Benchmarks on reads with at least one match. Reference extracted from the GRCh38 genome.</figcaption>
 </div>
 <br/><br/><br/>
 <div style="text-align: center;">
   <img
   src="img/benchmarkWithoutMatch.svg" alt="Benchmarks without match" style="display: block; height: 300px; margin: auto; padding: 0">
-  <figcaption>Benchmarks without match.</figcaption>
+  <br/><br/>Benchmarks on reads with no matches. Reference extracted from the GRCh38 genome.
 </div>
 
 ## Credits
