@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <unordered_set>
 #include <set>
-#include <bloom_filter.hpp>
+#include <bloom/bloom_filter.hpp>
 
 class SequenceFilter {
     bloom_filter substringBloomFilter;

@@ -7,6 +7,7 @@
 #include "../algorithms.h"
 #include <iostream>
 #include <fstream>
+#include <cassert>
 
 Test::Test(const std::shared_ptr<std::string> &reference, const std::shared_ptr<std::string> &r, size_t k,
            size_t firstK, double bloomFilterThreshold, double firstThreshold) :

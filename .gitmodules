@@ -1,0 +1,6 @@
+[submodule "ntHash"]
+	path = ntHash
+	url = git@github.com:bcgsc/ntHash.git
+[submodule "bloom"]
+	path = bloom
+	url = git@github.com:ArashPartow/bloom.git
