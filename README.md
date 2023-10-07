@@ -5,6 +5,30 @@ Given a reference nucleotide sequence $R$ and a long read $r$, this algorithm fi
 
 This solution was built on top of the concept of **Spaced Seed**.
 
+## Compilation
+1. Install [unordered_dense](https://github.com/martinus/unordered_dense);
+2. compile [ntHash](https://github.com/bcgsc/ntHash) by setting as prefix the root of the repository (see ntHash docs for further information);
+3. run the following:
+   ```bash
+   mkdir build and cd build
+   cmake -DCMAKE_BUILD_TYPE=Release ../
+   make
+   ```
+
+## Usage
+
+```bash
+./spacedSeeds run <reference FASTA> <read FASTA>
+```
+
+There are some optional arguments which can be used to set custom parameters:
+* `--k` sets the length of the spaced seeds in the second phase of the algorithm
+* `--firstK` sets the length of the exact k-mers which will be extracted during the first part of the algorithm
+* `--bloomFilterThreshold` sets the probability of the bloom filter of encountering a false positive
+* `--firstThreshold` sets the threshold under which the areas are not taken into account for the second part of the algorithm.
+
+
+
 ## How does it work
 The algorithm is designed to follow these steps:
 1. **Approximate identification of possible areas of match**. This step is crucial for the algorithm performance, since it allows to exclude almost all of $R$ from the next step, improving drastically the speed on real data, requiring much less memory and time. It makes use of a bloom filter containing informations on the existence or not of the $R$ exact $k$-$mers$. This step requires $\mathcal{O}(|R|)$ time. In more detail, it proceeds as follows:
@@ -21,6 +45,8 @@ The algorithm is designed to follow these steps:
 <div style="text-align: center;">
   <img
   src="img/indices.svg" alt="Indices" style="display: block; height: 400px; margin: auto; padding: 0">
+
+
   <figcaption>Overall structure of the indices used during the matching phase.</figcaption>
 </div>
 
