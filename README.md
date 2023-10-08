@@ -23,7 +23,7 @@ This solution was built on top of the concept of **Spaced Seed**.
 
 There are some optional arguments which can be used to set custom parameters:
 * `--k` sets the length of the spaced seeds in the second phase of the algorithm
-* `--firstK` sets the length of the exact k-mers which will be extracted during the first part of the algorithm
+* `--firstK` sets the length of the exact *k-mers* which will be extracted during the first part of the algorithm
 * `--bloomFilterThreshold` sets the probability of the bloom filter of encountering a false positive
 * `--firstThreshold` sets the threshold under which the areas are not taken into account for the second part of the algorithm.
 
@@ -31,7 +31,7 @@ There are some optional arguments which can be used to set custom parameters:
 
 ## How does it work
 The algorithm is designed to follow these steps:
-1. **Approximate identification of possible areas of match**. This step is crucial for the algorithm performance, since it allows to exclude almost all of $R$ from the next step, improving drastically the speed on real data, requiring much less memory and time. It makes use of a bloom filter containing informations on the existence or not of the $R$ exact $k$-$mers$. This step requires $\mathcal{O}(|R|)$ time. In more detail, it proceeds as follows:
+1. **Approximate identification of possible areas of match**. This step is crucial for the algorithm performance, since it allows to exclude almost all of $R$ from the next step, improving drastically the speed on real data, requiring much less memory and time. It makes use of a bloom filter containing informations on the existence or not of the $R$ exact *k-mers*. This step requires $\mathcal{O}(|R|)$ time. In more detail, it proceeds as follows:
     1. $R$ is split into subsequences of length $\left\lceil \frac{|r|}{2} \right\rceil$
     2. A bloom filter containing the exact *k-mers* $K_r$ of $r$ is constructed
     3. For each partition $p$ of $R$ with exact *k-mers* $K_p$, the metric $\textrm{sim}(b, r) = \frac{|  K_p \cap K_r  |}{|K_p|}$ is computed and it is decided whether to consider it or not a candidate partition by using a threshold $\tau$.
